@@ -1,7 +1,8 @@
 /*
  * Landing controller
  *   scroll position → progress q → frame index (single rAF loop, no autoplay)
- *   chapters / hero / canvas transform driven by q (opacity + translate + blur only)
+ *   hero / canvas transform driven by q (opacity + scale + blur only — the converter
+ *   stays centred throughout, it never shifts left/right)
  *   navigation, sign-in form, page-leave transition
  */
 (function (w, d) {
@@ -20,24 +21,19 @@
   var reduce = reduceMQ.matches;
 
   /* ─────────── timeline (fractions of the pinned scroll length) ─────────── */
-  var FRAME_END = 0.84;          // frames finish here, then the exploded view holds
+  var FRAME_END = 0.86;          // frames finish here, then the exploded view holds briefly
   var HERO_OUT = [0.012, 0.066];
-  var DIM = [0.925, 1.05];       // converter recedes into the background as sign-in arrives
-  var NAV_TECH = 0.335, NAV_MON = 0.505;
+  var DIM = [0.93, 1.05];        // converter recedes into the background as sign-in arrives
 
-  var nav = $('#nav'), navLinks = $('#navLinks'), burger = $('#burger'), navProgress = $('#navProgress'), navCta = $('#navCta');
+  var nav = $('#nav'), navProgress = $('#navProgress'), navCta = $('#navCta');
   var loader = $('#loader'), loaderBar = $('#loaderBar'), loaderPct = $('#loaderPct');
   var story = $('#story'), stage = $('#stage'), glow = $('#stageGlow'), canvas = $('#seq');
   var hero = $('#hero'), cue = $('#cue'), hud = $('#hud'), hudFrame = $('#hudFrame');
-  var chapters = $$('.chapter').map(function (el) {
-    return { el: el, a: +el.dataset.in, b: +el.dataset.out, shift: +el.dataset.shift || 0, v: -1 };
-  });
   var signin = $('#sign-in');
-  var anchors = { overview: $('#overview'), technology: $('#technology'), monitoring: $('#monitoring') };
 
   /* ─────────── state ─────────── */
   var vw = 0, vh = 0, Y = 1, isMobile = mobileMQ.matches;
-  var targetQ = 0, curQ = 0, raf = 0, lastT = 0, lastIdx = -2, lastNavKey = '';
+  var targetQ = 0, curQ = 0, raf = 0, lastT = 0, lastIdx = -2;
   var seq = null, manifest = w.STABILIZER_FRAMES;
   var scrubbing = false;
 
@@ -47,16 +43,11 @@
     isMobile = mobileMQ.matches;
     if (!scrubbing) return;
     Y = Math.max(1, story.offsetHeight - vh);
-    anchors.overview.style.top = '0px';
-    anchors.technology.style.top = Math.round(NAV_TECH * Y) + 'px';
-    anchors.monitoring.style.top = Math.round(NAV_MON * Y) + 'px';
   }
   function signInY() { return signin.getBoundingClientRect().top + w.pageYOffset; }
   function anchorY(id) {
     if (id === 'sign-in') return signInY();
-    if (id === 'overview') return 0;
-    if (id === 'technology') return scrubbing ? NAV_TECH * Y : anchors.technology.getBoundingClientRect().top + w.pageYOffset;
-    if (id === 'monitoring') return scrubbing ? NAV_MON * Y : anchors.monitoring.getBoundingClientRect().top + w.pageYOffset;
+    if (id === 'top') return 0;
     return null;
   }
 
@@ -79,47 +70,22 @@
 
     cue.style.opacity = (1 - smooth(0.002, 0.03, q)).toFixed(3);
 
-    // chapters
-    var xShift = 0, chVis = 0, shiftPx = isMobile ? 0 : Math.min(vw * (vw < 1200 ? 0.12 : 0.085), 150);
-    for (var i = 0; i < chapters.length; i++) {
-      var c = chapters[i];
-      var t = (q - c.a) / (c.b - c.a);
-      var inn = smooth(0, 0.24, t), out = 1 - smooth(0.76, 1, t);
-      var v = t <= 0 || t >= 1 ? 0 : inn * out;
-      xShift += v * c.shift * shiftPx; if (v > chVis) chVis = v;
-      if (Math.abs(v - c.v) > 0.002 || (v === 0) !== (c.v === 0)) {
-        c.v = v;
-        var y = (1 - inn) * 34 - (1 - out) * 26;
-        c.el.style.opacity = v.toFixed(3);
-        c.el.style.visibility = v > 0.01 ? 'visible' : 'hidden';
-        c.el.style.transform = (isMobile ? '' : 'translateY(-50%) ') + 'translate3d(0,' + y.toFixed(1) + 'px,0)';
-        c.el.style.filter = v < 0.985 ? 'blur(' + ((1 - v) * 7).toFixed(1) + 'px)' : 'none';
-        c.el.classList.toggle('on', v > 0.6);
-      }
-    }
-
-    // converter: gentle push-in during the sequence, then recede behind the sign-in
+    // converter: stays dead-centre the whole time — only scale/opacity change, never x/y drift.
+    // A gentle push-in while it disassembles, then it recedes into the background as sign-in arrives.
     var dim = smooth(DIM[0], DIM[1], q);
-    var s = (1 + 0.045 * smooth(0, 0.55, q)) * (1 - (isMobile ? 0 : 0.06) * chVis) - 0.13 * dim;
-    var yOff = (1 - hp) * vh * (isMobile ? 0.035 : 0.12) - dim * vh * 0.05;   // sits lower under the hero title, then settles to centre
-    canvas.style.transform = 'translate3d(calc(-50% + ' + xShift.toFixed(1) + 'px),calc(-50% + ' + yOff.toFixed(1) + 'px),0) scale(' + s.toFixed(4) + ')';
+    var s = (1 + 0.05 * smooth(0, 0.6, q)) - 0.13 * dim;
+    canvas.style.transform = 'translate3d(-50%,-50%,0) scale(' + s.toFixed(4) + ')';
     canvas.style.opacity = (1 - 0.8 * dim).toFixed(3);
     glow.style.opacity = (0.95 - 0.55 * dim).toFixed(3);
 
     // chrome
     navProgress.style.transform = 'scaleX(' + clamp(q, 0, 1).toFixed(4) + ')';
     hud.classList.toggle('hide', q < 0.004 || q > 0.9);
-
-    var key = q >= 0.965 ? 'sign-in' : q >= NAV_MON - 0.09 ? (q < 0.75 ? 'monitoring' : '') : q >= NAV_TECH - 0.075 ? 'technology' : 'overview';
-    if (key !== lastNavKey) {
-      lastNavKey = key;
-      $$('.nav-links a').forEach(function (a) { a.classList.toggle('active', a.dataset.nav === key); });
-    }
   }
 
   function tick(t) {
     var dt = Math.min(64, t - (lastT || t)); lastT = t;
-    var k = 1 - Math.pow(1 - 0.16, dt / 16.667);         // frame-rate independent easing
+    var k = 1 - Math.pow(1 - 0.13, dt / 16.667);         // frame-rate independent easing — the smoothing rate
     curQ += (targetQ - curQ) * k;
     if (Math.abs(targetQ - curQ) < 0.00006) curQ = targetQ;
     render(curQ);
@@ -163,22 +129,11 @@
         var y = anchorY(id);
         if (y == null) return;
         e.preventDefault();
-        closeMenu();
         scrollToY(y);
         if (history.replaceState) history.replaceState(null, '', '#' + id);
       });
     });
   }
-
-  /* ─────────── mobile menu ─────────── */
-  function closeMenu() { nav.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); }
-  burger.addEventListener('click', function (e) {
-    e.stopPropagation();
-    var open = !nav.classList.contains('open');
-    nav.classList.toggle('open', open); burger.setAttribute('aria-expanded', String(open));
-  });
-  d.addEventListener('click', function (e) { if (!nav.contains(e.target)) closeMenu(); });
-  d.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
 
   /* ─────────── loading ─────────── */
   var loaderStart = performance.now(), loaderDone = false;
@@ -325,7 +280,7 @@
       if (mobileMQ.matches && Math.abs(w.innerWidth - pw) < 2 && Math.abs(w.innerHeight - ph) < 160) return;
       var ratio = scrubbing ? w.pageYOffset / Y : 0;
       measure();
-      if (scrubbing) { w.scrollTo(0, ratio * Y); targetQ = curQ = w.pageYOffset / Y; lastIdx = -2; chapters.forEach(function (c) { c.v = -1; }); kick(); }
+      if (scrubbing) { w.scrollTo(0, ratio * Y); targetQ = curQ = w.pageYOffset / Y; lastIdx = -2; kick(); }
     }, 120);
   });
   reduceMQ.addEventListener && reduceMQ.addEventListener('change', function () { location.reload(); });

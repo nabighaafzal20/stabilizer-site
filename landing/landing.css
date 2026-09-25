@@ -73,38 +73,25 @@ button{font:inherit;color:inherit}
 .nav-in{height:100%;max-width:1480px;margin:0 auto;padding:0 var(--pad);display:flex;align-items:center;justify-content:space-between;gap:16px}
 .nav-progress{position:absolute;left:0;bottom:-1px;height:1px;width:100%;transform-origin:0 50%;transform:scaleX(0);
   background:linear-gradient(90deg,transparent,var(--cool-glow));opacity:.8}
-.brand{display:flex;align-items:center;gap:12px;min-width:0}
-.brand .bolt{width:38px;height:38px;border-radius:11px}
-.brand-txt{display:flex;flex-direction:column;min-width:0}
-.brand-name{font-weight:700;font-size:clamp(.95rem,1.5vw,1.08rem);letter-spacing:-.01em;line-height:1.15;white-space:nowrap}
-.brand-sub{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-faint);font-weight:500;margin-top:2px;white-space:nowrap}
-.nav-links{display:flex;align-items:center;gap:4px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0;flex:1 1 auto;overflow:hidden}
+.brand .bolt{width:38px;height:38px;border-radius:11px;flex-shrink:0}
+.brand-txt{display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.brand-name{font-weight:700;font-size:clamp(.95rem,1.5vw,1.08rem);letter-spacing:-.01em;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-sub{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-faint);font-weight:500;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-links{display:flex;align-items:center;gap:4px;flex-shrink:0}
 .nav-links a{position:relative;font-size:.86rem;font-weight:500;color:var(--text-dim);padding:9px 14px;border-radius:999px;transition:color .3s,background .3s}
 .nav-links a:hover{color:var(--text);background:rgba(239,214,172,.06)}
 .nav-links a.active{color:var(--text)}
 .nav-links a.active:not(.nav-cta)::after{content:"";position:absolute;left:14px;right:14px;bottom:4px;height:1px;background:var(--cool-glow);opacity:.8}
 .nav-links a.nav-cta{margin-left:10px;color:var(--cool-glow);border:1px solid rgba(63,214,191,.42);background:linear-gradient(120deg,rgba(31,142,126,.18),rgba(24,58,55,.4));font-weight:600;letter-spacing:.02em}
 .nav-links a.nav-cta:hover{box-shadow:0 0 30px -10px var(--cool);background:linear-gradient(120deg,rgba(31,142,126,.28),rgba(24,58,55,.5))}
-.burger{display:none;width:42px;height:42px;border-radius:12px;border:1px solid var(--line-strong);background:rgba(24,58,55,.4);place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.burger svg{width:21px;height:21px}
 
-@media (max-width:860px){
-  .burger{display:grid}
-  .nav-links{
-    position:absolute;top:calc(var(--nav-h) - 4px);left:12px;right:12px;flex-direction:column;align-items:stretch;gap:2px;padding:10px;
-    background:rgba(8,32,43,.92);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
-    border:1px solid var(--line-strong);border-radius:var(--r-lg);box-shadow:0 30px 60px -30px #000;
-    opacity:0;transform:translateY(-8px) scale(.98);pointer-events:none;visibility:hidden;transition:opacity .35s var(--ease-out),transform .35s var(--ease-out),visibility .35s;
-  }
-  .nav.open .nav-links{opacity:1;transform:none;pointer-events:auto;visibility:visible}
-  .nav-links a{padding:14px 16px;border-radius:12px;font-size:.98rem}
-  .nav-links a.nav-cta{margin:6px 0 0;text-align:center}
-  .nav-links a.active:not(.nav-cta)::after{display:none}
-}
 @media (max-width:420px){
-  .brand-sub{letter-spacing:.14em;font-size:.56rem}
-  .brand-name{font-size:.9rem}
-  .brand .bolt{width:34px;height:34px}
+  .brand-sub{letter-spacing:.1em;font-size:.52rem}
+  .brand-name{font-size:.82rem}
+  .brand .bolt{width:32px;height:32px;border-radius:10px}
+  .nav-links a.nav-cta{padding:8px 14px;font-size:.78rem;white-space:nowrap}
+  .nav-in{gap:10px}
 }
 
 /* ───────── story: static default ───────── */
@@ -121,20 +108,7 @@ main{position:relative;z-index:2}
 .hero-line{color:var(--text-dim);margin:18px auto 0;max-width:46ch;font-size:clamp(.95rem,1.8vw,1.1rem)}
 .scroll-cue{display:none}
 .cue-static{display:none}
-.chapter{order:3;position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(22px,3vw,34px);
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 1px 0 rgba(239,214,172,.05) inset,0 22px 60px -40px #000}
 .hud{display:none}
-
-.ch-idx{display:flex;align-items:center;gap:12px;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);font-weight:500}
-.ch-idx b{color:var(--hot-glow);font-weight:700;text-shadow:0 0 18px rgba(196,73,0,.6)}
-.ch-idx i{display:block;width:28px;height:1px;background:linear-gradient(90deg,var(--hot-glow),transparent)}
-.chapter h2{font-size:clamp(1.8rem,3.9vw,2rem);line-height:1.04;letter-spacing:-.025em;font-weight:700;margin-top:16px}
-.chapter p{color:var(--text-dim);font-size:clamp(.95rem,1.25vw,1.06rem);margin-top:16px;max-width:44ch}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;list-style:none}
-.chips li{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border-radius:999px;border:1px solid var(--line-strong);color:var(--text-dim);background:rgba(239,214,172,.04)}
-.chips sub{font-size:.7em;vertical-align:baseline;position:relative;top:.25em}
-.txt-link{display:inline-flex;gap:10px;align-items:center;margin-top:22px;font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:var(--cool-glow);border-bottom:1px solid rgba(63,214,191,.35);padding-bottom:4px;transition:gap .35s var(--ease-out),border-color .3s}
-.txt-link:hover{gap:16px;border-color:var(--cool-glow)}
 
 /* ───────── story: pinned / scroll-driven ───────── */
 html.scrub .story{max-width:none;height:var(--story-h);padding:0;display:block;margin:0}
@@ -160,18 +134,6 @@ html.scrub .scroll-cue{z-index:3;pointer-events:none;display:flex;flex-direction
 html.scrub .scroll-cue i{display:block;width:1px;height:38px;background:linear-gradient(var(--cool-glow),transparent);transform-origin:50% 0;animation:cue 2.4s var(--ease-io) infinite}
 @keyframes cue{0%{transform:scaleY(0);opacity:0}30%{opacity:1}70%{transform:scaleY(1);opacity:1}100%{transform:scaleY(1);opacity:0}}
 
-html.scrub .chapter{
-  position:fixed;z-index:3;top:50%;width:min(390px,27vw);background:none;border:0;box-shadow:none;padding:0;-webkit-backdrop-filter:none;backdrop-filter:none;
-  opacity:0;visibility:hidden;pointer-events:none;will-change:opacity,transform,filter;
-}
-html.scrub .chapter::before{ /* soft scrim so copy stays legible over parts */
-  content:"";position:absolute;z-index:-1;inset:-46px -54px;pointer-events:none;
-  background:radial-gradient(closest-side,rgba(4,21,31,.82),rgba(4,21,31,.55) 60%,transparent);
-}
-html.scrub .chapter[data-side="left"]{left:clamp(20px,5.5vw,96px)}
-html.scrub .chapter[data-side="right"]{right:clamp(20px,5.5vw,96px)}
-html.scrub .chapter.on{pointer-events:auto}
-
 html.scrub .hud{display:block;position:fixed;z-index:6;left:var(--pad);bottom:24px;font-size:.66rem;letter-spacing:.2em;color:var(--text-faint);transition:opacity .5s}
 html.scrub .hud b{color:var(--cool-glow);font-weight:500}
 html.scrub .hud.hide{opacity:0}
@@ -185,22 +147,7 @@ html.scrub .hud.hide{opacity:0}
   html.scrub .hero{top:calc(var(--nav-h) + 3vh)}
   html.scrub .hero h1{font-size:clamp(1.85rem,9vw,2.7rem)}
   html.scrub .hero-line{font-size:.9rem;margin-top:12px}
-  html.scrub .chapter{
-    top:auto;left:0!important;right:0!important;bottom:0;width:auto;padding:0 var(--pad) max(26px,env(safe-area-inset-bottom));
-  }
-  html.scrub .chapter::before{inset:-60px 0 0 0;background:linear-gradient(180deg,transparent,rgba(4,21,31,.86) 34%,rgba(4,21,31,.94))}
-  html.scrub .chapter h2{font-size:clamp(1.6rem,7.6vw,2.2rem);margin-top:12px}
-  html.scrub .chapter p{font-size:.92rem;margin-top:10px;max-width:none}
-  html.scrub .chips{margin-top:14px;gap:6px}
-  html.scrub .chips li{font-size:.6rem;padding:5px 10px}
   html.scrub .hud{display:none}
-}
-@media (max-width:760px) and (max-height:640px){ html.scrub .chapter p{display:none} }
-@media (min-width:761px) and (max-width:1100px){
-  html.scrub .chapter{width:min(340px,36vw)}
-}
-@media (min-width:761px) and (max-height:620px){
-  html.scrub .chapter p{display:none}
 }
 
 /* ───────── sign-in ───────── */
