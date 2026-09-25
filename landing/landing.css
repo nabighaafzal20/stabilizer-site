@@ -102,7 +102,7 @@ main{position:relative;z-index:2}
 .stage canvas{display:block;width:100%;height:auto;aspect-ratio:16/9}
 .stage-glow{display:none}
 .hero{order:1;text-align:center;padding-top:8px}
-.hero h1{font-size:clamp(2rem,6.4vw,3.6rem);line-height:1.04;letter-spacing:-.028em;font-weight:700;margin-top:16px;
+.hero h1{font-size:clamp(1.6rem,4.6vw,2.8rem);line-height:1.04;letter-spacing:-.028em;font-weight:700;margin-top:16px;margin-bottom:24px;
   text-shadow:0 0 60px rgba(4,21,31,.9)}
 .hero-sub{font-size:clamp(.72rem,1.5vw,.9rem);letter-spacing:.3em;text-transform:uppercase;color:var(--cool-glow);margin-top:16px}
 .hero-line{color:var(--text-dim);margin:18px auto 0;max-width:46ch;font-size:clamp(.95rem,1.8vw,1.1rem)}
@@ -128,7 +128,7 @@ html.scrub .stage canvas{
 
 html.scrub .hero{position:fixed;z-index:3;left:0;right:0;top:calc(var(--nav-h) + clamp(10px,3.6vh,52px));padding:0 var(--pad);pointer-events:none;will-change:opacity,transform}
 html.scrub .hero .eyebrow{color:var(--text-dim)}
-html.scrub .hero h1{font-size:clamp(1.7rem,3.6vw,3rem);max-width:15em;margin-left:auto;margin-right:auto}
+html.scrub .hero h1{font-size:clamp(1.4rem,2.6vw,2.2rem);max-width:15em;margin-left:auto;margin-right:auto}
 html.scrub .scroll-cue{z-index:3;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:12px;position:fixed;left:50%;bottom:clamp(20px,4vh,40px);transform:translateX(-50%);
   font-size:.64rem;letter-spacing:.26em;text-transform:uppercase;color:var(--text-faint);white-space:nowrap}
 html.scrub .scroll-cue i{display:block;width:1px;height:38px;background:linear-gradient(var(--cool-glow),transparent);transform-origin:50% 0;animation:cue 2.4s var(--ease-io) infinite}
@@ -145,7 +145,7 @@ html.scrub .hud.hide{opacity:0}
   html.scrub .stage{--cy:39%}
   html.scrub .stage canvas{width:min(108vw,100svh)}
   html.scrub .hero{top:calc(var(--nav-h) + 3vh)}
-  html.scrub .hero h1{font-size:clamp(1.85rem,9vw,2.7rem)}
+  html.scrub .hero h1{font-size:clamp(1.5rem,7vw,2.1rem)}
   html.scrub .hero-line{font-size:.9rem;margin-top:12px}
   html.scrub .hud{display:none}
 }
